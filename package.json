@@ -45,6 +45,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^6.2.0",
     "@eslint/markdown": "^7.5.1",
+    "@types/mdast": "^4.0.4",
     "@types/node": "^24.10.1",
     "@typescript-eslint/utils": "^8.46.4",
     "bumpp": "^10.3.1",

@@ -1,10 +1,11 @@
 import antfu from '@antfu/eslint-config'
-import markdown, { MarkdownLanguage } from '@eslint/markdown'
+import markdown from '@eslint/markdown'
 import plugin from './src/index'
 
 export default antfu(
   {
     type: 'lib',
+    typescript: true,
   },
   {
     files: ['**/*.md'],
