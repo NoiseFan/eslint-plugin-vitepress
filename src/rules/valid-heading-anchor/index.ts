@@ -1,6 +1,6 @@
 import type { Heading } from 'mdast'
 import { createRule } from '../../utils'
-import { getLikeAnchor, hasChinese, normalizeAnchor } from '../../utils/rules/anchor'
+import { getLikeAnchor, hasAnchor, hasChinese, normalizeAnchor } from '../../utils/rules/anchor'
 
 export const RULE_NAME = 'valid-heading-anchor'
 const MESSAGE_IDS = 'validHeadingAnchor'
@@ -24,13 +24,13 @@ export default createRule<Options, typeof MESSAGE_IDS>({
     return {
       heading(node: Heading) {
         const content = context.sourceCode.getText()
-        if (!hasChinese(content))
+        if (!hasChinese(content) && hasAnchor(content))
           return
         const rawLikeAnchor = getLikeAnchor(content)
         if (!rawLikeAnchor)
           return
 
-        const anchor = normalizeAnchor(rawLikeAnchor).replace(/_/g, '')
+        const anchor = normalizeAnchor(rawLikeAnchor)
         if (rawLikeAnchor === anchor)
           return
 

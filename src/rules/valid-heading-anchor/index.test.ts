@@ -14,16 +14,16 @@ const invalid: InvalidTestCase[] = [
     output: '# 中文标题 {#chinese-title}',
     errors: [{ messageId: 'validHeadingAnchor' }],
   },
-  // {
-  //   code: '# 中文标题 {#Foo_Bar`123}',
-  //   output: '# 中文标题 {#foo_bar123}',
-  //   errors: [{ messageId: 'validHeadingAnchor' }],
-  // },
-  // {
-  //   code: '# Introduction {#API-Reference_v2}',
-  //   output: '# Introduction {#api-reference_v2}',
-  //   errors: [{ messageId: 'validHeadingAnchor' }],
-  // },
+  {
+    code: '# 中文标题 {#Foo_Bar`123}',
+    output: '# 中文标题 {#foo_bar123}',
+    errors: [{ messageId: 'validHeadingAnchor' }],
+  },
+  {
+    code: '# Introduction {#API-Reference_v2}',
+    output: '# Introduction {#api-reference_v2}',
+    errors: [{ messageId: 'validHeadingAnchor' }],
+  },
 ]
 
 run({
