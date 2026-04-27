@@ -33,7 +33,6 @@ export default createRule<Options, MESSAGE_IDS>({
   },
   defaultOptions: [],
   create(context) {
-    // todo: get the markdown ast
     return {
       heading(node: Heading) {
         const content = getNodeText(node)
@@ -41,25 +40,10 @@ export default createRule<Options, MESSAGE_IDS>({
           return
 
         const likeAnchor = getLikeAnchor(content)
-        if (likeAnchor) {
+        if (!likeAnchor) {
           context.report({
             node: node as any,
             messageId: 'missingAnchor',
-            fix(fixer) {
-              const start = node.children[0].position!.start.offset!
-              const end = node.children.at(-1)!.position!.end.offset!
-              const rawHeadingText = context.sourceCode.getText().slice(start, end)
-              const rawLikeAnchor = getLikeAnchor(rawHeadingText) ?? likeAnchor
-
-              const anchor = likeAnchor
-                .toLowerCase()
-                .replace(/`/g, '')
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-|-$/g, '')
-              const headingContent = rawHeadingText.slice(0, -rawLikeAnchor.length - 2)
-
-              return fixer.replaceTextRange([start, end], `${headingContent} {#${anchor}}`)
-            },
           })
           return
         }
@@ -67,6 +51,21 @@ export default createRule<Options, MESSAGE_IDS>({
         context.report({
           node: node as any,
           messageId: 'missingAnchor',
+          fix(fixer) {
+            const start = node.children[0].position!.start.offset!
+            const end = node.children.at(-1)!.position!.end.offset!
+            const rawHeadingText = context.sourceCode.getText().slice(start, end)
+            const rawLikeAnchor = getLikeAnchor(rawHeadingText) ?? likeAnchor
+
+            const anchor = likeAnchor
+              .toLowerCase()
+              .replace(/`/g, '')
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-|-$/g, '')
+            const headingContent = rawHeadingText.slice(0, -rawLikeAnchor.length - 2)
+
+            return fixer.replaceTextRange([start, end], `${headingContent} {#${anchor}}`)
+          },
         })
       },
     }
