@@ -2,8 +2,10 @@ import type { Heading } from 'mdast'
 import { createRule } from '../../utils'
 import { getLikeAnchor, hasAnchor, hasChinese, normalizeAnchor } from '../../utils/rules/anchor'
 
-export const RULE_NAME = 'valid-heading-anchor'
-const MESSAGE_IDS = 'validHeadingAnchor'
+export const RULE_NAME = 'no-missing-heading-anchor'
+
+const MESSAGE_IDS = 'missingAnchor'
+
 type Options = []
 
 export default createRule<Options, typeof MESSAGE_IDS>({
@@ -11,10 +13,10 @@ export default createRule<Options, typeof MESSAGE_IDS>({
   meta: {
     type: 'layout',
     docs: {
-      description: 'Enforce lowercase heading anchors and remove unsupported characters.',
+      description: 'Non-ASCII heading must have an anchor',
     },
     messages: {
-      validHeadingAnchor: 'Heading anchors must use lowercase letters, digits, and hyphens only.',
+      missingAnchor: 'Non-ASCII heading must have an anchor in the format "{#lowercase-anchor}".',
     },
     fixable: 'whitespace',
     schema: [],
@@ -24,15 +26,17 @@ export default createRule<Options, typeof MESSAGE_IDS>({
     return {
       heading(node: Heading) {
         const content = context.sourceCode.getText()
-        if (!hasChinese(content) && hasAnchor(content))
-          return
-        const rawLikeAnchor = getLikeAnchor(content)
-        if (!rawLikeAnchor)
+        if (!hasChinese(content) || hasAnchor(content))
           return
 
-        const anchor = normalizeAnchor(rawLikeAnchor)
-        if (rawLikeAnchor === anchor)
+        const likeAnchor = getLikeAnchor(content)
+        if (!likeAnchor) {
+          context.report({
+            node: node as any,
+            messageId: MESSAGE_IDS,
+          })
           return
+        }
 
         context.report({
           node: node as any,
@@ -40,8 +44,12 @@ export default createRule<Options, typeof MESSAGE_IDS>({
           fix(fixer) {
             const start = node.position!.start.offset!
             const end = node.position!.end.offset!
+            const rawLikeAnchor = getLikeAnchor(content) ?? likeAnchor
 
-            return fixer.replaceTextRange([start, end], content.replace(/\{#[^}]+\}$/, `{#${anchor}}`))
+            const anchor = normalizeAnchor(rawLikeAnchor)
+            const headingContent = content.slice(0, -rawLikeAnchor.length - 2)
+
+            return fixer.replaceTextRange([start, end], `${headingContent} {#${anchor}}`)
           },
         })
       },

@@ -4,32 +4,25 @@ import { run } from 'eslint-vitest-rule-tester'
 import rule, { RULE_NAME } from './index'
 
 const valid: ValidTestCase[] = [
-  '# Some English Title',
-  '# Introduction',
   '# 中文标题 {#chinese-title}',
-  '# 简介 {#intro}',
-  '# some title {#some-title-1}',
-  '## Secondary title',
-  '## Include `code` block',
+  '# Introduction {#intro-2}',
 ]
 
 const invalid: InvalidTestCase[] = [
   {
-    code: '# 中文标题',
-    errors: [{ messageId: 'missingAnchor' }],
+    code: '# 中文标题 {#Chinese-Title}',
+    output: '# 中文标题 {#chinese-title}',
+    errors: [{ messageId: 'validHeadingAnchor' }],
   },
   {
-    code: '# 你的第一个测试 Your First Test',
-    errors: [{ messageId: 'missingAnchor' }],
+    code: '# 中文标题 {#Foo_Bar`123}',
+    output: '# 中文标题 {#foo_bar123}',
+    errors: [{ messageId: 'validHeadingAnchor' }],
   },
   {
-    code: '## API 介绍 API Introduction',
-    errors: [{ messageId: 'missingAnchor' }],
-  },
-  {
-    code: '## 使用 `describe` 编组测试 #Grouping Tests with `describe`',
-    output: '## 使用 `describe` 编组测试 {#grouping-tests-with-describe}',
-    errors: [{ messageId: 'missingAnchor' }],
+    code: '# Introduction {#API-Reference_v2}',
+    output: '# Introduction {#api-reference_v2}',
+    errors: [{ messageId: 'validHeadingAnchor' }],
   },
 ]
 
