@@ -4,7 +4,7 @@ import { getLikeAnchor, hasAnchor, hasChinese, normalizeAnchor } from '../../uti
 
 export const RULE_NAME = 'valid-heading-anchor'
 const MESSAGE_IDS = {
-  validHeadingAnchor: 'validHeadingAnchor',
+  invalidHeadingAnchor: 'invalidHeadingAnchor',
 } as const
 
 type MessageIds = typeof MESSAGE_IDS[keyof typeof MESSAGE_IDS]
@@ -18,7 +18,7 @@ export default createRule<Options, MessageIds>({
       description: 'Normalize non-ASCII heading anchor suffixes to lowercase, URL-safe anchors.',
     },
     messages: {
-      validHeadingAnchor: 'Heading anchors must use lowercase letters, digits, and hyphens only.',
+      invalidHeadingAnchor: 'Heading anchors must use lowercase letters, digits, and hyphens only.',
     },
     fixable: 'whitespace',
     schema: [],
@@ -44,7 +44,7 @@ export default createRule<Options, MessageIds>({
 
         context.report({
           node: node as any,
-          messageId: MESSAGE_IDS.validHeadingAnchor,
+          messageId: MESSAGE_IDS.invalidHeadingAnchor,
           fix(fixer) {
             return fixer.replaceTextRange([start, end], content.replace(/\{#[^}]+\}$/, `{#${anchor}}`))
           },

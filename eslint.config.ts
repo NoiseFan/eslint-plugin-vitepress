@@ -22,10 +22,12 @@ export default antfu(
     files: ['**/*.md'],
     plugins: {
       markdown,
-      vitepress: plugin,
+      'docs-style': plugin,
     },
     rules: {
-      'vitepress/valid-heading-anchor': 'error',
+      'docs-style/require-heading-anchor': 'error',
+      'docs-style/space-between-link': 'error',
+      'docs-style/valid-heading-anchor': 'error',
     },
   },
 )
