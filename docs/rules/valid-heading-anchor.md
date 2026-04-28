@@ -1,4 +1,4 @@
-# Valid heading anchor {vitepress/valid-heading-anchor}
+# Valid heading anchor {docs-style/valid-heading-anchor}
 
 ```js
 const a = 1

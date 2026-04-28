@@ -2,7 +2,7 @@ import type { Heading } from 'mdast'
 import { createRule, getNodePosition } from '../../utils'
 import { getLikeAnchor, hasAnchor, hasChinese, normalizeAnchor } from '../../utils/rules/anchor'
 
-export const RULE_NAME = 'no-missing-heading-anchor'
+export const RULE_NAME = 'require-heading-anchor'
 
 const MESSAGE_IDS = {
   missingAnchor: 'missingAnchor',

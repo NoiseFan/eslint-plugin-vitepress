@@ -1,4 +1,6 @@
-# Eslint Plugin
+# eslint-plugin-docs-style
+
+ESLint plugin for enforcing style rules in Markdown-based documentation.
 
 ## License
 
