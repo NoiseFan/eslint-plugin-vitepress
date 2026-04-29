@@ -11,6 +11,7 @@ const valid: ValidTestCase[] = [
   '# some title {#some-title-1}',
   '## Secondary title',
   '## Include `code` block',
+  '---\ntitle: restoreMocks | 配置\noutline: deep\n---\n\n# restoreMocks',
 ]
 
 const invalid: InvalidTestCase[] = [

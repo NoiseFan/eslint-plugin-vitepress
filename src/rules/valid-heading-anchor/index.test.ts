@@ -6,6 +6,10 @@ import rule, { RULE_NAME } from './index'
 const valid: ValidTestCase[] = [
   '# 中文标题 {#chinese-title}',
   '# Introduction {#intro-2}',
+  `---
+title: restoreMocks | 配置
+outline: deep
+---`,
 ]
 
 const invalid: InvalidTestCase[] = [

@@ -1,6 +1,7 @@
 import type { Heading } from 'mdast'
 import { createRule, getNodePosition } from '../../utils'
 import { getLikeAnchor, hasAnchor, hasChinese, normalizeAnchor } from '../../utils/rules/anchor'
+import { isFrontmatter, isHeading } from '../../utils/rules/heading'
 
 export const RULE_NAME = 'valid-heading-anchor'
 const MESSAGE_IDS = {
@@ -25,9 +26,17 @@ export default createRule<Options, MessageIds>({
   },
   defaultOptions: [],
   create(context) {
+    const content = context.sourceCode.text
+
     return {
       heading(node: Heading) {
-        const content = context.sourceCode.getText()
+        const { position, start, end } = getNodePosition(node)
+        if (!position)
+          return
+
+        if (isFrontmatter(content) || !isHeading(content))
+          return
+
         if (!hasChinese(content) && hasAnchor(content))
           return
         const rawLikeAnchor = getLikeAnchor(content)
@@ -36,10 +45,6 @@ export default createRule<Options, MessageIds>({
 
         const anchor = normalizeAnchor(rawLikeAnchor)
         if (rawLikeAnchor === anchor)
-          return
-
-        const { position, start, end } = getNodePosition(node)
-        if (!position)
           return
 
         context.report({
