@@ -1,8 +1,9 @@
 const FRONTMATTER_KEY_VALUE_LINE_RE = /^[\w-]+\s*:\s*(?:\S.*)?$/
 const FRONTMATTER_DELIMITER_RE = /^\s{0,3}---\s*$/
+
 // @see https://webcoder.info/markdown-headers.html
 const ATX_HEADING_RE = /^\s{0,3}#{1,6}.?/
-const SETEXT_HEADING_UNDERLINE_RE = /.*\n+---$/
+const SETEXT_HEADING_UNDERLINE_RE = /[-=]{3}$/
 
 /**
  * Check whether a line follows a simple YAML frontmatter key-value shape.
@@ -40,17 +41,15 @@ export function isHeading(rawText: string): boolean {
 
   if (ATX_HEADING_RE.test(lines[0]))
     return true
-
-  if (lines.length !== 2)
+  if (lines.length < 2)
     return false
 
-  return lines[0].trim().length > 0 && SETEXT_HEADING_UNDERLINE_RE.test(lines[1])
+  return lines[0].trim().length > 0 && SETEXT_HEADING_UNDERLINE_RE.test(lines[lines.length - 1])
 }
 
 /**
  * Normalize a heading-like raw text block into lines using LF line breaks.
  */
 function normalizeHeading(rawText: string): Array<string> {
-  const normalized = rawText.replace(/\r\n?/g, '\n')
-  return normalized.split('\n')
+  return rawText.replace(/\r\n?/g, '\n').split('\n')
 }

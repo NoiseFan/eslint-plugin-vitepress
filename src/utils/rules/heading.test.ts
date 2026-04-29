@@ -45,6 +45,7 @@ describe('isHeading', () => {
   })
 
   it('returns true for setext headings', () => {
+    expect(isHeading('c\nTitle\n---')).toBeTruthy()
     expect(isHeading('Title\n---')).toBeTruthy()
     expect(isHeading('Title\n===')).toBeTruthy()
   })
