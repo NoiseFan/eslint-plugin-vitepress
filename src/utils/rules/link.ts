@@ -1,134 +1,175 @@
-import type { LinkSpaceContext, LinkSpaceIssue } from '../../types'
+import type { InlineCode, Link } from 'mdast'
+import type { NodeContextReturnType } from '../ast'
+import { isTextNode } from '../ast'
 
-const LEFT_PUNCTUATION = new Set(['(', '[', '{', '<', '（', '【', '《', '“', '‘', '，', '。', '！', '？', '：', '；', '、'])
+export const LINK_SPACE_MESSAGE_IDS = {
+  missingSpaceBeforeLink: 'missingSpaceBeforeLink',
+  missingSpaceAfterLink: 'missingSpaceAfterLink',
+  multipleSpacesBeforeLink: 'multipleSpacesBeforeLink',
+  multipleSpacesAfterLink: 'multipleSpacesAfterLink',
+  multipleSpacesAfterPunctuation: 'multipleSpacesAfterPunctuation',
+  unexpectedSpaceBeforeLink: 'unexpectedSpaceBeforeLink',
+  unexpectedSpaceAfterLink: 'unexpectedSpaceAfterLink',
+} as const
 
-const RIGHT_PUNCTUATION = new Set([')', ']', '}', '>', ',', '.', '!', '?', ':', ';', '）', '】', '》', '”', '’', '，', '。', '！', '？', '：', '；', '、'])
+export type LinkSpaceIssue = typeof LINK_SPACE_MESSAGE_IDS[keyof typeof LINK_SPACE_MESSAGE_IDS]
 
-function isWhitespace(char: string | undefined): boolean {
-  return !!char && /\s/.test(char)
-}
-
-function isLeftPunctuation(char: string | undefined): boolean {
-  return !!char && LEFT_PUNCTUATION.has(char)
-}
-
-function isRightPunctuation(char: string | undefined): boolean {
-  return !!char && RIGHT_PUNCTUATION.has(char)
-}
+type PositionOptions = 'head' | 'tail'
 
 /**
- * Returns whether the character before a link requires exactly one space.
- * @example: `在 [link](/link)` and `foo [link](/link)`.
+ * 是否是全角符号
  */
-export function needsSpaceBeforeLink(char: string | undefined): boolean {
-  if (!char)
+export function isFullwidthPunctuation(str: string | undefined): boolean {
+  if (!str || typeof str !== 'string' || str.length !== 1)
+    return false
+  return /^[\u3001-\u303F\uFE10-\uFE1F\uFE30-\uFE4F\uFF01-\uFF0F\uFF1A-\uFF20\uFF3B-\uFF40\uFF5B-\uFF65“”‘’—…]$/u.test(str)
+}
+const HALFWIDTH_PUNCTUATION_RE = /^\p{P}$/u
+
+/**
+ * 是否是半角符号
+ *
+ */
+export function isHalfwidthPunctuation(str: string | undefined): boolean {
+  if (!str || typeof str !== 'string' || str.length !== 1)
+    return false
+  return str.charCodeAt(0) <= 0x7E && HALFWIDTH_PUNCTUATION_RE.test(str)
+}
+
+const PUNCTUATION_RE = /^\p{P}$/u
+
+/**
+ * 是否是标点符号
+ * 包含全角符号、半角符号、数学符号、货币符号
+ */
+export function isPunctuation(str: string): boolean {
+  if (typeof str !== 'string' || str.length !== 1)
     return false
 
-  return !isWhitespace(char) && !isLeftPunctuation(char)
+  return PUNCTUATION_RE.test(str)
+}
+
+interface whiteSpaceReturn {
+  count: number
+  start: number
+  end: number
 }
 
 /**
- * Returns whether the character after a link requires exactly one space.
- * @example: `[link](/link) 中` and `[link](/link) guide`.
+ * 获取空格数量及其空格所在位置的相对节点
  */
-export function needsSpaceAfterLink(char: string | undefined): boolean {
-  if (!char)
+export function getWhiteSpace(str: string | undefined, position: PositionOptions = 'head'): whiteSpaceReturn {
+  const defaultVal = { count: 0, start: 0, end: 0 }
+  if (!str || str.length === 0)
+    return defaultVal
+  if (position === 'head') {
+    const match = str.match(/^\s+/)
+    if (!match || !match[0])
+      return defaultVal
+    return {
+      count: match[0].length,
+      start: 0,
+      end: match[0].length,
+    }
+  }
+  else {
+    const match = str.match(/\s+$/)
+    if (!match || !match.index)
+      return defaultVal
+    return {
+      count: match[0].length,
+      start: match.index,
+      end: str.length,
+    }
+  }
+}
+
+export function hasPunctuation(str: string | undefined, position: PositionOptions = 'head'): boolean {
+  if (!str)
     return false
-
-  return !isWhitespace(char) && !isRightPunctuation(char)
-}
-
-function findPreviousNonSpaceIndex(str: string, index: number): number {
-  for (let i = index; i >= 0; i--) {
-    if (!isWhitespace(str[i]))
-      return i
+  str = str.trim()
+  if (position === 'head') {
+    return isPunctuation(str[0])
   }
-  return -1
-}
-
-function findNextNonSpaceIndex(str: string, index: number): number {
-  for (let i = index; i < str.length; i++) {
-    if (!isWhitespace(str[i]))
-      return i
+  else {
+    return isPunctuation(str[str.length - 1])
   }
-  return -1
 }
 
-/**
- * Returns the `[start, end)` offset range of the first Markdown inline link.
- */
-export function getLinkRange(str: string): [number, number] | null {
-  const match = /\[[^\]]+\]\([^)]+\)/.exec(str)
-  if (!match || match.index === undefined)
-    return null
+function getAdjacentChar(str: string | undefined, position: PositionOptions): string | undefined {
+  if (!str)
+    return undefined
 
-  return [match.index, match.index + match[0].length]
+  str = str.trim()
+  return position === 'head' ? str[0] : str[str.length - 1]
 }
 
-export function validLinkSpace(str: string): boolean {
-  const range = getLinkRange(str)
-  if (!range)
-    return true
-
-  const [start, end] = range
-  return getLinkSpaceIssue(str, start, end) == null
+interface AdjacentTextContext {
+  value: string | undefined
+  whiteSpace: whiteSpaceReturn
+  hasPunctuation: boolean
+  punctuationType: 'full' | 'half'
+}
+export interface SpaceContext {
+  prev?: AdjacentTextContext
+  next?: AdjacentTextContext
 }
 
-/**
- * Collects the nearest non-space characters around a link and the raw space ranges
- * adjacent to it, so callers can both validate and autofix spacing.
- * @example: in `foo  [link](/link)  bar`, both adjacent space ranges have length 2.
- */
-export function getLinkSpaceContext(source: string, start: number, end: number): LinkSpaceContext {
-  const beforeIndex = findPreviousNonSpaceIndex(source, start - 1)
-  const afterIndex = findNextNonSpaceIndex(source, end)
-  const beforeSpaceStart = beforeIndex + 1
-  const beforeSpaceEnd = start
-  const afterSpaceStart = end
-  const afterSpaceEnd = afterIndex >= 0 ? afterIndex : end
-
+export function getSpaceContext(nodeContext: NodeContextReturnType<Link | InlineCode>): SpaceContext {
+  const { prev, next } = nodeContext
+  const prevValue = isTextNode(prev) ? prev.value : undefined
+  const nextValue = isTextNode(next) ? next.value : undefined
   return {
-    beforeIndex,
-    afterIndex,
-    beforeSpaceStart,
-    beforeSpaceEnd,
-    afterSpaceStart,
-    afterSpaceEnd,
-    beforeChar: beforeIndex >= 0 ? source[beforeIndex] : undefined,
-    afterChar: afterIndex >= 0 ? source[afterIndex] : undefined,
-    hasSpaceBefore: isWhitespace(source[start - 1]),
-    hasSpaceAfter: isWhitespace(source[end]),
+    prev: {
+      value: prevValue,
+      whiteSpace: getWhiteSpace(prevValue, 'tail'),
+      hasPunctuation: hasPunctuation(prevValue, 'tail'),
+      punctuationType: isFullwidthPunctuation(getAdjacentChar(prevValue, 'tail')) ? 'full' : 'half',
+    },
+    next: {
+      value: nextValue,
+      whiteSpace: getWhiteSpace(nextValue),
+      hasPunctuation: hasPunctuation(nextValue),
+      punctuationType: isFullwidthPunctuation(getAdjacentChar(nextValue, 'head')) ? 'full' : 'half',
+    },
   }
 }
 
-/**
- * Resolves the concrete spacing issue around a link.
- * Rules:
- * - normal text around a link requires exactly one space
- * - compact punctuation around a link requires zero spaces
- */
-export function getLinkSpaceIssue(source: string, start: number, end: number): LinkSpaceIssue | null {
-  const context = getLinkSpaceContext(source, start, end)
-  const beforeSpaceLength = context.beforeSpaceEnd - context.beforeSpaceStart
-  const afterSpaceLength = context.afterSpaceEnd - context.afterSpaceStart
+export function validateSpace(nodeContext: NodeContextReturnType<Link>): LinkSpaceIssue | undefined {
+  const { prev, next } = nodeContext
+  const spaceContext = getSpaceContext(nodeContext)
 
-  if (needsSpaceBeforeLink(context.beforeChar) && !context.hasSpaceBefore)
-    return 'missingSpaceBeforeLink'
+  if (!prev || !spaceContext.prev)
+    return
 
-  if (needsSpaceBeforeLink(context.beforeChar) && beforeSpaceLength > 1)
-    return 'multipleSpacesBeforeLink'
+  if (spaceContext.prev.hasPunctuation) {
+    if (spaceContext.prev.punctuationType === 'half') {
+      if (spaceContext.prev.whiteSpace.count < 1)
+        return LINK_SPACE_MESSAGE_IDS.missingSpaceBeforeLink
+      if (spaceContext.prev.whiteSpace.count > 1)
+        return LINK_SPACE_MESSAGE_IDS.multipleSpacesAfterPunctuation
+    }
+    else if (spaceContext.prev.whiteSpace.count > 0) {
+      return LINK_SPACE_MESSAGE_IDS.unexpectedSpaceBeforeLink
+    }
+  }
+  else {
+    if (spaceContext.prev.whiteSpace.count < 1)
+      return LINK_SPACE_MESSAGE_IDS.missingSpaceBeforeLink
+    if (spaceContext.prev.whiteSpace.count > 1)
+      return LINK_SPACE_MESSAGE_IDS.multipleSpacesBeforeLink
+  }
 
-  if (isLeftPunctuation(context.beforeChar) && context.hasSpaceBefore)
-    return 'unexpectedSpaceBeforeLink'
-
-  if (needsSpaceAfterLink(context.afterChar) && !context.hasSpaceAfter)
-    return 'missingSpaceAfterLink'
-
-  if (needsSpaceAfterLink(context.afterChar) && afterSpaceLength > 1)
-    return 'multipleSpacesAfterLink'
-
-  if (isRightPunctuation(context.afterChar) && context.hasSpaceAfter)
-    return 'unexpectedSpaceAfterLink'
-
-  return null
+  if (!next || !spaceContext.next)
+    return
+  if (spaceContext.next.hasPunctuation) {
+    if (spaceContext.next.whiteSpace.count > 0)
+      return LINK_SPACE_MESSAGE_IDS.unexpectedSpaceAfterLink
+  }
+  else {
+    if (spaceContext.next.whiteSpace.count < 1)
+      return LINK_SPACE_MESSAGE_IDS.missingSpaceAfterLink
+    if (spaceContext.next.whiteSpace.count > 1)
+      return LINK_SPACE_MESSAGE_IDS.multipleSpacesAfterLink
+  }
 }

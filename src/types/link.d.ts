@@ -1,3 +1,5 @@
+import type { LINK_SPACE_MESSAGE_IDS } from '../utils/rules/link'
+
 export interface LinkSpaceContext {
   afterChar?: string
   afterIndex: number
@@ -11,10 +13,4 @@ export interface LinkSpaceContext {
   hasSpaceBefore: boolean
 }
 
-export type LinkSpaceIssue
-  = | 'missingSpaceBeforeLink'
-    | 'missingSpaceAfterLink'
-    | 'multipleSpacesBeforeLink'
-    | 'multipleSpacesAfterLink'
-    | 'unexpectedSpaceBeforeLink'
-    | 'unexpectedSpaceAfterLink'
+export type LinkSpaceIssue = typeof LINK_SPACE_MESSAGE_IDS[keyof typeof LINK_SPACE_MESSAGE_IDS]

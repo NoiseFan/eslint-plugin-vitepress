@@ -39,7 +39,7 @@ export default createRule<Options, MessageIds>({
         const liked = getLikeAnchor(source)
         if (!liked) {
           context.report({
-            node: node as any,
+            node,
             messageId: MESSAGE_IDS.missingAnchor,
           })
           return
@@ -54,7 +54,7 @@ export default createRule<Options, MessageIds>({
           return
 
         context.report({
-          node: node as any,
+          node,
           messageId: isLikeAnchor ? MESSAGE_IDS.missingAnchor : MESSAGE_IDS.invalidHeadingAnchor,
           fix(fixer) {
             return fixer.replaceTextRange([start, end], `${remainingContent} {#${anchor}}`)
