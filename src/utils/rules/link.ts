@@ -1,6 +1,6 @@
-import type { InlineCode, Link } from 'mdast'
+import type { InlineCode, Link, PhrasingContent } from 'mdast'
 import type { NodeContextReturnType } from '../ast'
-import { isTextNode } from '../ast'
+import { isParentNode } from '../ast'
 
 export const LINK_SPACE_MESSAGE_IDS = {
   missingSpaceBeforeLink: 'missingSpaceBeforeLink',
@@ -20,7 +20,7 @@ type PositionOptions = 'head' | 'tail'
  * 是否是全角符号
  */
 export function isFullwidthPunctuation(str: string | undefined): boolean {
-  if (!str || typeof str !== 'string' || str.length !== 1)
+  if (!str || str.length !== 1)
     return false
   return /^[\u3001-\u303F\uFE10-\uFE1F\uFE30-\uFE4F\uFF01-\uFF0F\uFF1A-\uFF20\uFF3B-\uFF40\uFF5B-\uFF65“”‘’…]$/u.test(str)
 }
@@ -28,12 +28,19 @@ const HALFWIDTH_PUNCTUATION_RE = /^\p{P}$/u
 
 /**
  * 是否是半角符号
- *
  */
 export function isHalfwidthPunctuation(str: string | undefined): boolean {
-  if (!str || typeof str !== 'string' || str.length !== 1)
+  if (!str || str.length !== 1)
     return false
   return str.charCodeAt(0) <= 0x7E && HALFWIDTH_PUNCTUATION_RE.test(str)
+}
+
+const DASH_PUNCTUATION_RE = /^[-\u2013\u2014\u2212]$/u
+export function isDashPunctuation(str: string | undefined): boolean {
+  if (!str || str.length !== 1)
+    return false
+
+  return DASH_PUNCTUATION_RE.test(str)
 }
 
 const PUNCTUATION_RE = /^\p{P}$/u
@@ -43,7 +50,7 @@ const PUNCTUATION_RE = /^\p{P}$/u
  * 包含全角符号、半角符号、数学符号、货币符号
  */
 export function isPunctuation(str: string): boolean {
-  if (typeof str !== 'string' || str.length !== 1)
+  if (!str || str.length !== 1)
     return false
 
   return PUNCTUATION_RE.test(str)
@@ -74,7 +81,7 @@ export function getWhiteSpace(str: string | undefined, position: PositionOptions
   }
   else {
     const match = str.match(/\s+$/)
-    if (!match || !match.index)
+    if (!match || match.index == null)
       return defaultVal
     return {
       count: match[0].length,
@@ -115,10 +122,26 @@ export interface SpaceContext {
   next?: AdjacentTextContext
 }
 
+function getNodeValue(node: PhrasingContent | undefined): string | undefined {
+  if (!node)
+    return
+  if ('value' in node)
+    return node.value
+  if (isParentNode(node)) {
+    const value = node.children
+      .map(child => getNodeValue(child))
+      .filter(value => value !== undefined)
+      .join('')
+
+    return value || undefined
+  }
+}
+
 export function getSpaceContext(nodeContext: NodeContextReturnType<Link | InlineCode>): SpaceContext {
   const { prev, next } = nodeContext
-  const prevValue = isTextNode(prev) ? prev.value : undefined
-  const nextValue = isTextNode(next) ? next.value : undefined
+  const prevValue = getNodeValue(prev)
+  const nextValue = getNodeValue(next)
+
   return {
     prev: {
       value: prevValue,

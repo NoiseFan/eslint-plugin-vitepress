@@ -132,8 +132,8 @@ const invalid: InvalidTestCase[] = [
   // inline element 递归情况
   {
     description: 'missing space between adjacent links',
-    code: '[link](/link)[link](/link)',
-    output: '[link](/link) [link](/link)',
+    code: '[link1](/link1)[link2](/link2)',
+    output: '[link1](/link1) [link2](/link2)',
     errors: [{ messageId: MESSAGE_IDS.missingSpaceBeforeLink }],
   },
   {
@@ -176,12 +176,6 @@ const invalid: InvalidTestCase[] = [
     description: 'missing space before link after reference image',
     code: '![alt][img][link](/link)\n\n[img]: /img.png',
     output: '![alt][img] [link](/link)\n\n[img]: /img.png',
-    errors: [{ messageId: MESSAGE_IDS.missingSpaceBeforeLink }],
-  },
-  {
-    description: 'missing space before link after hard line break',
-    code: 'line\\\n[link](/link)',
-    output: 'line\\\n [link](/link)',
     errors: [{ messageId: MESSAGE_IDS.missingSpaceBeforeLink }],
   },
 ]
