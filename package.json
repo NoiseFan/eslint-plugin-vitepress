@@ -47,7 +47,6 @@
     "eslint": "^9.0.0 || ^10.0.0"
   },
   "dependencies": {
-    "tinyglobby": "^0.2.16"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.2.0",
@@ -62,6 +61,7 @@
     "eslint-vitest-rule-tester": "^3.0.0",
     "lint-staged": "^16.4.0",
     "simple-git-hooks": "^2.13.1",
+    "tinyglobby": "^0.2.16",
     "tsdown": "^0.16.4",
     "typescript": "^5.9.3",
     "vitest": "^4.0.9"
