@@ -68,5 +68,8 @@ run({
   configs: {
     plugins: { markdown },
     language: 'markdown/commonmark',
+    languageOptions: {
+      frontmatter: 'yaml',
+    },
   },
 })

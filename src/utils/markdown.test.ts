@@ -15,6 +15,19 @@ describe('parseMarkdown', () => {
     expect(sourceCode.ast).toStrictEqual(ast)
     expect(findNode(ast, isLinkNode)?.url).toStrictEqual('/guide/')
   })
+
+  it('parses yaml frontmatter as a yaml node', () => {
+    const markdown = `---
+title: 快速起步 | 指南
+next:
+  text: Writing Tests
+  link: /guide/learn/writing-tests
+demo: 123
+---`
+    const { ast } = parseMarkdown(markdown)
+
+    expect(findNode(ast, node => node.type === 'yaml')?.type).toStrictEqual('yaml')
+  })
 })
 
 describe('getParsedNodeContext', () => {
