@@ -30,9 +30,6 @@ export const configs: PluginConfigMap = {
     },
     language: 'docs-style/commonmark',
     rules: recommendedRules,
-    languageOptions: {
-      frontmatter: 'yaml',
-    },
   },
   all: {
     name: 'docs-style/all',
@@ -42,9 +39,6 @@ export const configs: PluginConfigMap = {
     },
     language: 'docs-style/commonmark',
     rules: allRules,
-    languageOptions: {
-      frontmatter: 'yaml',
-    },
   },
 }
 

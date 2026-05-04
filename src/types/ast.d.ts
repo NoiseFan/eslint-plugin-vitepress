@@ -1,6 +1,6 @@
 import type { Parents, PhrasingContent, RootContent } from 'mdast'
 
-export type SiblingNode<Current extends RootContent> = Current extends PhrasingContent
+export type SiblingNode<Current extends RootContent = RootContent> = Current extends PhrasingContent
   ? PhrasingContent
   : RootContent
 
