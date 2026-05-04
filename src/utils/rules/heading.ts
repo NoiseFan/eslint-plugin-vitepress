@@ -17,10 +17,10 @@ export function isFrontmatter(rawText: string): boolean {
   const lines = normalizeHeading(rawText)
 
   const lastLine = lines.at(-1) ?? ''
-  if (FRONTMATTER_DELIMITER_RE.test(lastLine))
-    return lines.slice(0, -1).every(isKeyValueLine)
+  if (!FRONTMATTER_DELIMITER_RE.test(lastLine))
+    return false
 
-  return lines.every(isKeyValueLine)
+  return lines.slice(0, -1).every(isKeyValueLine)
 }
 
 /**
