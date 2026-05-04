@@ -1,34 +1,13 @@
-const FRONTMATTER_KEY_VALUE_LINE_RE = /^[\w-]+\s*:\s*(?:\S.*)?$/
-const FRONTMATTER_DELIMITER_RE = /^\s{0,3}---\s*$/
+import type { RootContent } from 'mdast'
+import { parseMarkdown } from '../markdown'
 
 /**
- * Check whether a line follows a simple YAML frontmatter key-value shape.
- * @example key: value
+ * Returns true when the Markdown document starts with YAML frontmatter.
  */
-export function isKeyValueLine(line: string): boolean {
-  return FRONTMATTER_KEY_VALUE_LINE_RE.test(line)
-}
+export function hasFrontmatter(markdown: string, prevNode?: RootContent): boolean {
+  if (prevNode?.type === 'thematicBreak')
+    markdown = `---\n${markdown}`
 
-/**
- * Check whether a raw text block is actually YAML frontmatter content
- * that was misparsed as a heading node.
- */
-export function isFrontmatter(rawText: string): boolean {
-  const lines = normalizeHeading(rawText)
-
-  if (lines.length < 2)
-    return false
-
-  const lastLine = lines.at(-1) ?? ''
-  if (!FRONTMATTER_DELIMITER_RE.test(lastLine))
-    return false
-
-  return lines.slice(0, -1).every(isKeyValueLine)
-}
-
-/**
- * Normalize a heading-like raw text block into lines using LF line breaks.
- */
-function normalizeHeading(rawText: string): Array<string> {
-  return rawText.replace(/\r\n?/g, '\n').split('\n')
+  const { ast } = parseMarkdown(markdown)
+  return ast.children[0]?.type === 'yaml'
 }

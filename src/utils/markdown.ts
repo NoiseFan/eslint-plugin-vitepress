@@ -22,7 +22,10 @@ export function parseMarkdown(markdown: string): ParsedMarkdown {
     body: markdown,
   }
   const parseResult = language.parse(file, {
-    languageOptions: language.defaultLanguageOptions,
+    languageOptions: {
+      ...language.defaultLanguageOptions,
+      frontmatter: 'yaml',
+    },
   })
 
   if (!parseResult.ok)

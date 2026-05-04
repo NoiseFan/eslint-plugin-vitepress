@@ -1,6 +1,7 @@
 import { createRule, getNodePosition } from '../../utils'
+import { getNodeContext } from '../../utils/ast'
 import { calcAnchorPositionCompensate, getLikeAnchor, hasChinese, isStrictAnchor, normalizeAnchor } from '../../utils/rules/anchor'
-import { isFrontmatter } from '../../utils/rules/heading'
+import { hasFrontmatter } from '../../utils/rules/heading'
 
 export const RULE_NAME = 'valid-heading-anchor'
 const MESSAGE_IDS = {
@@ -33,7 +34,13 @@ export default createRule<Options, MessageIds>({
           return
 
         const source = context.sourceCode.text.slice(start, end)
-        if (isStrictAnchor(source) || !hasChinese(source) || isFrontmatter(source))
+
+        if (isStrictAnchor(source) || !hasChinese(source))
+          return
+
+        // ignore frontmatter
+        const nodeContext = getNodeContext(context, node)
+        if (hasFrontmatter(source, nodeContext.prev))
           return
 
         const liked = getLikeAnchor(source)
