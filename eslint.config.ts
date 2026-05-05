@@ -22,7 +22,7 @@ export default antfu(
     files: ['**/*.md'],
     plugins: {
       markdown,
-      'docs-style': plugin,
+      'md-style': plugin,
     },
     rules: {},
   },

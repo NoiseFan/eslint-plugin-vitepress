@@ -11,7 +11,7 @@ export const plugin: ESLint.Plugin = {
   },
 }
 
-const allRuleEntries = Object.keys(rules).map(ruleName => [`docs-style/${ruleName}`, 'error'] as const)
+const allRuleEntries = Object.keys(rules).map(ruleName => [`md-style/${ruleName}`, 'error'] as const)
 
 const recommendedRules = Object.fromEntries(allRuleEntries)
 const allRules = Object.fromEntries(allRuleEntries)
@@ -23,29 +23,29 @@ interface PluginConfigMap {
 
 export const configs: PluginConfigMap = {
   recommended: {
-    name: 'docs-style/recommended',
+    name: 'md-style/recommended',
     files: ['**/*.md'],
     plugins: {
-      'docs-style': plugin,
+      'md-style': plugin,
     },
-    language: 'docs-style/commonmark',
+    language: 'md-style/commonmark',
     rules: recommendedRules,
   },
   all: {
-    name: 'docs-style/all',
+    name: 'md-style/all',
     files: ['**/*.md'],
     plugins: {
-      'docs-style': plugin,
+      'md-style': plugin,
     },
-    language: 'docs-style/commonmark',
+    language: 'md-style/commonmark',
     rules: allRules,
   },
 }
 
-export type DocsStylePlugin = ESLint.Plugin & {
+export type MdStylePlugin = ESLint.Plugin & {
   configs: PluginConfigMap
 }
 
-const docsStylePlugin: DocsStylePlugin = Object.assign(plugin, { configs })
+const mdStylePlugin: MdStylePlugin = Object.assign(plugin, { configs })
 
-export default docsStylePlugin
+export default mdStylePlugin

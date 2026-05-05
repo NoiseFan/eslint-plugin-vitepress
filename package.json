@@ -1,18 +1,18 @@
 {
-  "name": "eslint-plugin-docs-style",
+  "name": "eslint-plugin-md-style",
   "type": "module",
   "version": "0.1.0-beta.1",
   "packageManager": "pnpm@10.21.0",
   "description": "ESLint plugin for enforcing style rules in Markdown-based documentation",
   "author": "noisefan <noisefan@163.com>",
   "license": "MIT",
-  "homepage": "https://github.com/NoiseFan/eslint-plugin-docs-style#readme",
+  "homepage": "https://github.com/NoiseFan/eslint-plugin-md-style#readme",
   "repository": {
     "type": "git",
-    "url": "git+github.com:NoiseFan/eslint-plugin-docs-style.git"
+    "url": "git+github.com:NoiseFan/eslint-plugin-md-style.git"
   },
   "bugs": {
-    "url": "https://github.com/NoiseFan/eslint-plugin-docs-style/issues"
+    "url": "https://github.com/NoiseFan/eslint-plugin-md-style/issues"
   },
   "exports": {
     ".": "./dist/index.mjs",
