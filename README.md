@@ -1,11 +1,11 @@
-# eslint-plugin-docs-style
+# eslint-plugin-md-style
 
 ESLint plugin for enforcing style rules in Markdown-based documentation.
 
 ## Install
 
 ```bash
-pnpm add -D eslint @eslint/markdown eslint-plugin-docs-style
+pnpm add -D eslint @eslint/markdown eslint-plugin-md-style
 ```
 
 `@eslint/markdown` is required because this plugin registers Markdown processors and languages on top of it.
@@ -18,14 +18,14 @@ Use the built-in flat configs to lint Markdown files directly.
 
 ```ts
 import antfu from '@antfu/eslint-config'
-import docsStyle from 'eslint-plugin-docs-style'
+import mdStyle from 'eslint-plugin-md-style'
 
 export default antfu(
   {
     formatters: true,
     markdown: true,
   },
-  docsStyle.configs.recommended,
+  mdStyle.configs.recommended,
 )
 ```
 
@@ -35,18 +35,18 @@ For partial adoption, you can start from `recommended` and override individual r
 
 ```ts
 import antfu from '@antfu/eslint-config'
-import docsStyle from 'eslint-plugin-docs-style'
+import mdStyle from 'eslint-plugin-md-style'
 
 export default antfu(
   {
     formatters: true,
     markdown: true,
   },
-  docsStyle.configs.recommended,
+  mdStyle.configs.recommended,
   {
     files: ['**/*.md'],
     rules: {
-      'docs-style/valid-heading-anchor': 'off',
+      'md-style/valid-heading-anchor': 'off',
     },
   },
 )
@@ -56,7 +56,7 @@ If you only want to enable part of the plugin, register the plugin and select ru
 
 ```ts
 import antfu from '@antfu/eslint-config'
-import plugin from 'eslint-plugin-docs-style'
+import plugin from 'eslint-plugin-md-style'
 
 export default antfu(
   {
@@ -66,12 +66,12 @@ export default antfu(
   {
     files: ['**/*.md'],
     plugins: {
-      'docs-style': plugin,
+      'md-style': plugin,
     },
-    language: 'docs-style/commonmark',
+    language: 'md-style/commonmark',
     rules: {
-      'docs-style/space-between-link': 'error',
-      'docs-style/valid-heading-anchor': 'error',
+      'md-style/space-between-link': 'error',
+      'md-style/valid-heading-anchor': 'error',
     },
   },
 )
@@ -80,7 +80,7 @@ export default antfu(
 ### `recommended`
 
 ```ts
-import plugin from 'eslint-plugin-docs-style'
+import plugin from 'eslint-plugin-md-style'
 
 export default [
   plugin.configs.recommended,
@@ -92,7 +92,7 @@ export default [
 ### `all`
 
 ```ts
-import plugin from 'eslint-plugin-docs-style'
+import plugin from 'eslint-plugin-md-style'
 
 export default [
   plugin.configs.all,
@@ -105,8 +105,8 @@ export default [
 
 | Rule | Included in `recommended` | Autofix |
 | --- | --- | --- |
-| `docs-style/space-between-link` | Yes | Yes |
-| `docs-style/valid-heading-anchor` | Yes | Yes |
+| `md-style/space-between-link` | Yes | Yes |
+| `md-style/valid-heading-anchor` | Yes | Yes |
 
 ## License
 
