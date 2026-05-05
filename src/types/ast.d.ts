@@ -4,13 +4,25 @@ export type SiblingNode<Current extends RootContent = RootContent> = Current ext
   ? PhrasingContent
   : RootContent
 
+/**
+ * The current node together with its parent and adjacent siblings.
+ */
 export interface NodeContextReturnType<
   Current extends RootContent = RootContent,
   Sibling extends RootContent = SiblingNode<Current>,
 > {
   parent?: Parents
+  /**
+   * The previous sibling node.
+   */
   prev?: Sibling
+  /**
+   * The next sibling node.
+   */
   next?: Sibling
+  /**
+   * The current node.
+   */
   current: Current
 }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { findNode, isLinkNode, isParagraphNode, isParentNode, isTextNode } from './ast'
+import { findNode, hasChildren, isLinkNode, isParagraphNode, isTextNode } from './ast'
 import { parseMarkdown } from './markdown'
 
 describe('isParentNode', () => {
@@ -7,15 +7,15 @@ describe('isParentNode', () => {
     const { ast } = parseMarkdown('A [link](/guide/) here.')
     const paragraph = findNode(ast, isParagraphNode)
 
-    expect(isParentNode(ast)).toBeTruthy()
-    expect(paragraph && isParentNode(paragraph)).toBeTruthy()
+    expect(hasChildren(ast)).toBeTruthy()
+    expect(paragraph && hasChildren(paragraph)).toBeTruthy()
   })
 
   it('returns false for leaf nodes', () => {
     const { ast } = parseMarkdown('Plain text.')
     const text = findNode(ast, isTextNode)
 
-    expect(text && isParentNode(text)).toBeFalsy()
+    expect(text && hasChildren(text)).toBeFalsy()
   })
 })
 

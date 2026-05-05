@@ -8,7 +8,7 @@ export type {
   SourceCodeWithAncestors,
 } from '../types/ast'
 
-/* ==================== Internal guards ==================== */
+/* ==================== Node type guards ==================== */
 
 /**
  * Checks whether an unknown value behaves like an mdast parent node.
@@ -16,21 +16,8 @@ export type {
  * This intentionally accepts unknown values because ESLint's ancestor API does
  * not expose mdast-specific types.
  */
-function hasChildren(node: unknown): node is Parents {
+export function hasChildren(node: unknown): node is Parents {
   return !!node && typeof node === 'object' && 'children' in node && Array.isArray(node.children)
-}
-
-/* ==================== Node type guards ==================== */
-
-/**
- * Narrows any mdast node to a parent-like node with a children array.
- *
- * The Markdown parser can return both container nodes and leaf nodes. This
- * helper keeps traversal code type-safe without relying on a fixed list of
- * container node types.
- */
-export function isParentNode(node: Nodes): node is Parents {
-  return 'children' in node && Array.isArray(node.children)
 }
 
 /**
@@ -67,7 +54,7 @@ export function findNode<Found extends Nodes>(
   if (predicate(node))
     return node
 
-  if (!isParentNode(node))
+  if (!hasChildren(node))
     return undefined
 
   for (const child of node.children) {

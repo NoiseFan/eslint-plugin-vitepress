@@ -19,7 +19,27 @@ export function createRule<Options extends unknown[], MessageIds extends string>
   }
 }
 
-interface IPosition { position: boolean, start: number, end: number }
+/**
+ * The resolved source position of a node.
+ */
+interface IPosition {
+  /**
+   * Whether the node has a complete position.
+   */
+  position: boolean
+  /**
+   * The start offset of the node.
+   */
+  start: number
+  /**
+   * The end offset of the node.
+   */
+  end: number
+}
+
+/**
+ * Gets the start and end offsets for a node.
+ */
 export function getNodePosition(node: Nodes): IPosition {
   const start = node.position?.start.offset
   const end = node.position?.end.offset

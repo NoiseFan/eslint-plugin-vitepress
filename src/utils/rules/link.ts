@@ -1,7 +1,7 @@
 import type { InlineCode, Link, PhrasingContent } from 'mdast'
 import type { LinkSpaceIssue, PositionOptions, SpaceContext } from '../../types/link'
 import type { NodeContextReturnType } from '../ast'
-import { isParentNode } from '../ast'
+import { hasChildren } from '../ast'
 import { getLikeAnchor } from './anchor'
 
 export const LINK_SPACE_MESSAGE_IDS = {
@@ -161,7 +161,7 @@ function getNodeValue(node: PhrasingContent | undefined): string | undefined {
     return
   if ('value' in node)
     return node.value
-  if (isParentNode(node)) {
+  if (hasChildren(node)) {
     const value = node.children
       .map(getNodeValue)
       .join('')
