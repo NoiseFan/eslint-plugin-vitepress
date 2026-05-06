@@ -124,6 +124,18 @@ const valid: ValidTestCase[] = [
     description: 'reference images are not selected as inline element target',
     code: '![alt][img]text\n\n[img]: /img.png',
   },
+  {
+    description: '忽略表格中内联元素首尾空格',
+    code: '| 配置参数                 | 设置值                              |\n| ---------------------- | ---------------------------------- |\n| Working directory      | `/path/to/your-project-root`       |',
+  },
+  {
+    description: '半角符号前后应有空格',
+    code: '`not` / `!`',
+  },
+  {
+    description: '连续的内联元素应使用空格隔开',
+    code: '- **CLI:** `--browser.ui`\n- **Config:** [browser.ui](/config/browser/ui)',
+  },
 ]
 
 const invalid: InvalidTestCase[] = [
