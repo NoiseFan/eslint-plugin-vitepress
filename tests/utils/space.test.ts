@@ -1,7 +1,7 @@
 import type { SpaceContext } from '@/types/space'
-import { isInlineCodeNode } from '../../src/utils/ast'
-import { getParsedLinkContext, getParsedNodeContext } from '../../src/utils/markdown'
-import { getSpaceContext, getWhiteSpace } from '../../src/utils/space'
+import { isInlineCodeNode } from '@/utils/ast'
+import { getParsedLinkContext, getParsedNodeContext } from '@/utils/markdown'
+import { getSpaceContext, getWhiteSpace } from '@/utils/space'
 
 describe('getSpaceCount', () => {
   it('counts leading whitespace', () => {

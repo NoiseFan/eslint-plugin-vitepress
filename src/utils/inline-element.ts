@@ -2,7 +2,7 @@ import type { NodeContextReturnType } from '@/types/ast'
 import type { AdjacentTextContext, InlineElement, InlineElementSpaceIssue } from '@/types/inline-element'
 import { getLikeAnchor } from './anchor'
 import { getAdjacentChar, isInlineElement, isTableCell } from './ast'
-import { CLOSING_PAIRED_PUNCTUATION, isDashPunctuation, isHalfwidthPunctuation, OPENING_PAIRED_PUNCTUATION } from './punctuation'
+import { CLOSING_PAIRED_PUNCTUATION, isDashPunctuation, isSlashPunctuation, OPENING_PAIRED_PUNCTUATION } from './punctuation'
 import { getSpaceContext } from './space'
 
 export const INLINE_SPACE_MESSAGE_IDS = {
@@ -50,8 +50,8 @@ export function validateSingleRequiredSpace<T extends InlineElementSpaceIssue>(
 export function validateBeforePunctuation(
   context: AdjacentTextContext,
 ): InlineElementSpaceIssue | undefined {
-  // opening paired punctuation
-  if (OPENING_PAIRED_PUNCTUATION.has(getAdjacentChar(context.value, 'tail') || '')) {
+  const adjacentChar = getAdjacentChar(context.value, 'tail')
+  if (OPENING_PAIRED_PUNCTUATION.has(adjacentChar || '') || isSlashPunctuation(adjacentChar)) {
     if (context.whiteSpace.count > 0)
       return INLINE_SPACE_MESSAGE_IDS.unexpectedSpaceBefore
     return
@@ -92,30 +92,26 @@ export function validateSpaceBeforeNode(
 export function validateSpaceAfterPunctuation(context: AdjacentTextContext): InlineElementSpaceIssue | undefined {
   const adjacentChar = getAdjacentChar(context.value, 'head')
 
-  if (isDashPunctuation(adjacentChar)) {
-    return validateSingleRequiredSpace(
-      context.whiteSpace.count,
-      INLINE_SPACE_MESSAGE_IDS.missingSpaceAfter,
-      INLINE_SPACE_MESSAGE_IDS.multipleSpacesAfter,
-    )
-  }
-
-  if (CLOSING_PAIRED_PUNCTUATION.has(adjacentChar || '')) {
-    if (context.whiteSpace.count > 0)
-      return INLINE_SPACE_MESSAGE_IDS.unexpectedSpaceAfter
-    return
-  }
-
-  if (isHalfwidthPunctuation(adjacentChar)) {
-    return validateSingleRequiredSpace(
-      context.whiteSpace.count,
-      INLINE_SPACE_MESSAGE_IDS.missingSpaceAfter,
-      INLINE_SPACE_MESSAGE_IDS.multipleSpacesAfter,
-    )
-  }
-
   if (getLikeAnchor(context.value) || isCustomContainerMarker(context.value))
     return
+
+  if (
+    CLOSING_PAIRED_PUNCTUATION.has(adjacentChar || '')
+    && context.whiteSpace.count > 0
+  ) {
+    return INLINE_SPACE_MESSAGE_IDS.unexpectedSpaceAfter
+  }
+
+  if (
+    (context.punctuationType === 'half' && OPENING_PAIRED_PUNCTUATION.has(adjacentChar || ''))
+    || isDashPunctuation(adjacentChar)
+  ) {
+    return validateSingleRequiredSpace(
+      context.whiteSpace.count,
+      INLINE_SPACE_MESSAGE_IDS.missingSpaceAfter,
+      INLINE_SPACE_MESSAGE_IDS.multipleSpacesAfter,
+    )
+  }
 
   if (context.whiteSpace.count > 0)
     return INLINE_SPACE_MESSAGE_IDS.unexpectedSpaceAfter

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { isInlineCodeNode } from '../../src/utils/ast'
+import { isInlineCodeNode } from '@/utils/ast'
 import {
   isCustomContainerMarker,
   validateSpace,
   validateSpaceAfterPunctuation,
-} from '../../src/utils/inline-element'
-import { getParsedNodeContext } from '../../src/utils/markdown'
+} from '@/utils/inline-element'
+import { getParsedNodeContext } from '@/utils/markdown'
 
 describe('isCustomContainerMarker', () => {
   it('should return true for custom container markers on the next line', () => {
@@ -40,21 +40,61 @@ describe('validateSpace', () => {
 })
 
 describe('validateSpaceAfterPunctuation', () => {
-  it('should allow inline elements to touch closing paired punctuation', () => {
-    expect(validateSpaceAfterPunctuation({
-      value: ') next',
-      whiteSpace: { count: 0, start: 0, end: 0 },
-      hasPunctuation: true,
-      punctuationType: 'half',
-    })).toBeUndefined()
+  describe('closing paired punctuation', () => {
+    it('allows no space before closing punctuation', () => {
+      expect(validateSpaceAfterPunctuation({
+        value: ') next',
+        whiteSpace: { count: 0, start: 0, end: 0 },
+        hasPunctuation: true,
+        punctuationType: 'half',
+      })).toBeUndefined()
+    })
+
+    it('reports a single unexpected space before closing punctuation', () => {
+      expect(validateSpaceAfterPunctuation({
+        value: ' ) next',
+        whiteSpace: { count: 1, start: 0, end: 1 },
+        hasPunctuation: true,
+        punctuationType: 'half',
+      })).toBe('unexpectedSpaceAfter')
+    })
+
+    it('reports multiple unexpected spaces before closing punctuation', () => {
+      expect(validateSpaceAfterPunctuation({
+        value: '  ) next',
+        whiteSpace: { count: 2, start: 0, end: 2 },
+        hasPunctuation: true,
+        punctuationType: 'half',
+      })).toBe('unexpectedSpaceAfter')
+    })
   })
 
-  it('should report unexpected spaces before closing paired punctuation', () => {
-    expect(validateSpaceAfterPunctuation({
-      value: ' ) next',
-      whiteSpace: { count: 1, start: 0, end: 1 },
-      hasPunctuation: true,
-      punctuationType: 'half',
-    })).toBe('unexpectedSpaceAfter')
+  describe('opening paired punctuation', () => {
+    it('reports a missing space before opening punctuation', () => {
+      expect(validateSpaceAfterPunctuation({
+        value: '(next',
+        whiteSpace: { count: 0, start: 0, end: 0 },
+        hasPunctuation: true,
+        punctuationType: 'half',
+      })).toBe('missingSpaceAfter')
+    })
+
+    it('allows a single space before opening punctuation', () => {
+      expect(validateSpaceAfterPunctuation({
+        value: ' (next',
+        whiteSpace: { count: 1, start: 1, end: 2 },
+        hasPunctuation: true,
+        punctuationType: 'half',
+      })).toBeUndefined()
+    })
+
+    it('reports multiple spaces before opening punctuation', () => {
+      expect(validateSpaceAfterPunctuation({
+        value: '  (next',
+        whiteSpace: { count: 2, start: 0, end: 2 },
+        hasPunctuation: true,
+        punctuationType: 'half',
+      })).toBe('multipleSpacesAfter')
+    })
   })
 })

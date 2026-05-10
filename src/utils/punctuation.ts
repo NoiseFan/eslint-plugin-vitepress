@@ -4,6 +4,13 @@ export const OPENING_PAIRED_PUNCTUATION = new Set(['(', '[', '{', '<', '（', '�
 export const CLOSING_PAIRED_PUNCTUATION = new Set([')', ']', '}', '>', '）', '】', '》', '”', '’'])
 
 /**
+ * Checks whether the character is a slash used as a path-like separator.
+ */
+export function isSlashPunctuation(str: string | undefined): boolean {
+  return str === '/'
+}
+
+/**
  * Checks whether the character is fullwidth punctuation.
  * @example `。` -> true
  * @example `,` -> false

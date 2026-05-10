@@ -1,4 +1,4 @@
-It is recommended that you install a copy of `vitest` in your `package.json`
+It is recommended that you install a copy of `vitest` in your `package.json`.
 
 如果在 `package.json` 中安装一份 `vitest` 的副本
 
@@ -38,6 +38,8 @@ Asserts that `value` is a function.
 
 - **Type:** `Assertion` (property, not a method)
 
-`toMatchSnapshot()` / `toMatchInlineSnapshot()` / `toMatchFileSnapshot()`
+<!-- inline element / inline element -->
 
-The `-t` (or `--testNamePattern`) option filters by the test's name rather than the filename.
+`toMatchSnapshot()`/`toMatchInlineSnapshot()`/`toMatchFileSnapshot()`
+
+The `-t` (or `--testNamePattern`) option filters by the (`test's` name) rather than the filename.

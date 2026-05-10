@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isDashPunctuation, isFullwidthPunctuation, isHalfwidthPunctuation, isPunctuation } from '../../src/utils/punctuation'
+import { isDashPunctuation, isFullwidthPunctuation, isHalfwidthPunctuation, isPunctuation, isSlashPunctuation } from '@/utils/punctuation'
 
 describe('isFullwidthPunctuation', () => {
   it('should return true for fullwidth punctuation', () => {
@@ -75,6 +75,22 @@ describe('isDashPunctuation', () => {
     const inputs = [',', '.', '，', '。', '', '--']
     for (const input of inputs) {
       expect(isDashPunctuation(input), input).toBeFalsy()
+    }
+  })
+})
+
+describe('isSlashPunctuation', () => {
+  it('should return true for slash', () => {
+    const inputs = ['/']
+    for (const input of inputs) {
+      expect(isSlashPunctuation(input), input).toBeTruthy()
+    }
+  })
+
+  it('should return false for non-slash values', () => {
+    const inputs = ['(', ')', '-', '.', 'a', '', undefined]
+    for (const input of inputs) {
+      expect(isSlashPunctuation(input), String(input)).toBeFalsy()
     }
   })
 })
