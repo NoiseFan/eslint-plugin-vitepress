@@ -23,6 +23,7 @@ const BEFORE_INLINE_ELEMENT_MESSAGE_IDS = new Set<MessageIds>([
  */
 function checkInlineElement(context: RuleContext<MessageIds, Options>, node: InlineElement): void {
   const { position, start, end } = getNodePosition(node)
+  /* v8 ignore if -- @preserve */
   if (!position)
     return
 

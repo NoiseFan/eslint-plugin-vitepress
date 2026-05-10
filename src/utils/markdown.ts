@@ -28,6 +28,7 @@ export function parseMarkdown(markdown: string): ParsedMarkdown {
     },
   })
 
+  /* v8 ignore if -- @preserve */
   if (!parseResult.ok)
     throw new Error(parseResult.errors[0]?.message ?? 'Failed to parse markdown.')
 

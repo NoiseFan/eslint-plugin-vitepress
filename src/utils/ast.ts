@@ -113,6 +113,8 @@ export function getNodeValue(
 export function getNodePosition(node: Nodes): NodePositionReturnType {
   const start = node.position?.start.offset
   const end = node.position?.end.offset
+
+  /* v8 ignore if -- @preserve */
   if (start == null || end == null)
     return { position: false, start: 0, end: 0 }
 
@@ -140,6 +142,7 @@ export function getNodeContext(
     return { prev: undefined, next: undefined, current: node }
 
   const currentIndex = parent.children.findIndex(child => child === node)
+  /* v8 ignore if -- @preserve */
   if (currentIndex === -1)
     return { parent, prev: undefined, next: undefined, current: node }
 

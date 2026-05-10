@@ -33,9 +33,9 @@ describe('isHalfwidthPunctuation', () => {
   })
 
   it('should return false for non-punctuation values', () => {
-    const inputs = ['a', '1', ' ', '', 'ab', '+', '$', '￥', '×', '<', '>']
+    const inputs = ['a', '1', ' ', '', 'ab', '+', '$', '￥', '×', '<', '>', '—', undefined]
     for (const input of inputs) {
-      expect(isHalfwidthPunctuation(input), input).toBeFalsy()
+      expect(isHalfwidthPunctuation(input), String(input)).toBeFalsy()
     }
   })
 })
@@ -72,9 +72,9 @@ describe('isDashPunctuation', () => {
   })
 
   it('should return false for non-dash punctuation', () => {
-    const inputs = [',', '.', '，', '。', '', '--']
+    const inputs = [',', '.', '，', '。', '', '--', undefined]
     for (const input of inputs) {
-      expect(isDashPunctuation(input), input).toBeFalsy()
+      expect(isDashPunctuation(input), String(input)).toBeFalsy()
     }
   })
 })

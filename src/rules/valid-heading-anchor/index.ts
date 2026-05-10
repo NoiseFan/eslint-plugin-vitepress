@@ -30,6 +30,7 @@ export default createRule<Options, MessageIds>({
     return {
       heading(node) {
         const { position, start, end } = getNodePosition(node)
+        /* v8 ignore if -- @preserve */
         if (!position)
           return
 
