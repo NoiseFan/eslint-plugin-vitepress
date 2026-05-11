@@ -4,7 +4,6 @@ export default antfu(
   {
     type: 'lib',
     typescript: true,
-    ignores: ['**/example'],
     test: {
       overrides: {
         'test/padding-around-after-all-blocks': 'error',
