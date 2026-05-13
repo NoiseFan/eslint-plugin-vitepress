@@ -1,22 +1,6 @@
 {
   "type": "text",
   "value": "中 A",
-  "node": {
-    "type": "text",
-    "value": "中 A",
-    "position": {
-      "start": {
-        "line": 1,
-        "column": 6,
-        "offset": 5
-      },
-      "end": {
-        "line": 1,
-        "column": 9,
-        "offset": 8
-      }
-    }
-  },
   "position": {
     "start": {
       "line": 1,
@@ -78,5 +62,21 @@
         }
       }
     }
-  ]
+  ],
+  "node": {
+    "type": "text",
+    "value": "中 A",
+    "position": {
+      "start": {
+        "line": 1,
+        "column": 6,
+        "offset": 5
+      },
+      "end": {
+        "line": 1,
+        "column": 9,
+        "offset": 8
+      }
+    }
+  }
 }

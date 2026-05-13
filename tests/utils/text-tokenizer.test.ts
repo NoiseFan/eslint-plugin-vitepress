@@ -22,21 +22,15 @@ describe('getTextType', () => {
 
 describe('tokenizeText', () => {
   it('groups same-type chars', async () => {
-    await expect(JSON.stringify(tokenizeText('中文 Vitest 4.1，OK'), null, 2)).toMatchFileSnapshot(
-      'tests/utils/__snapshots__/tokenizeText-groups-same-type-chars.json',
-    )
+    await expect(JSON.stringify(tokenizeText('中文 Vitest 4.1，OK'), null, 2)).toMatchFileSnapshot('__snapshots__/tokenizeText-groups-same-type-chars.json')
   })
 
   it('keeps code unit offsets', async () => {
-    await expect(JSON.stringify(tokenizeText('a🙂中'), null, 2)).toMatchFileSnapshot(
-      'tests/utils/__snapshots__/tokenizeText-keeps-code-unit-offsets.json',
-    )
+    await expect(JSON.stringify(tokenizeText('a🙂中'), null, 2)).toMatchFileSnapshot('__snapshots__/tokenizeText-keeps-code-unit-offsets.json')
   })
 
   it('tracks positions across lines', async () => {
-    await expect(JSON.stringify(tokenizeText('A\n中'), null, 2)).toMatchFileSnapshot(
-      'tests/utils/__snapshots__/tokenizeText-tracks-positions-across-lines.json',
-    )
+    await expect(JSON.stringify(tokenizeText('A\n中'), null, 2)).toMatchFileSnapshot('__snapshots__/tokenizeText-tracks-positions-across-lines.json')
   })
 })
 
@@ -51,8 +45,6 @@ describe('buildTextNodeAst', () => {
       },
     } as Text
 
-    await expect(JSON.stringify(buildTextNodeAst(node), null, 2)).toMatchFileSnapshot(
-      'tests/utils/__snapshots__/buildTextNodeAst-uses-mdast-offsets-for-token-ranges.json',
-    )
+    await expect(JSON.stringify(buildTextNodeAst(node), null, 2)).toMatchFileSnapshot('__snapshots__/buildTextNodeAst-uses-mdast-offsets-for-token-ranges.json')
   })
 })
