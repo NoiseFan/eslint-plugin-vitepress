@@ -22,7 +22,7 @@ export default createRule<Options, MessageIds>({
   meta: {
     type: 'layout',
     docs: {
-      description: 'Enforce a single space between CJK characters and alphanumeric words.',
+      description: 'Enforce a single space between CJK characters and Latin words.',
     },
     messages: {
       missingSpaceBefore: 'Add a space before the word.',
@@ -58,10 +58,10 @@ export default createRule<Options, MessageIds>({
 
 /**
  * Checks whether a token type should be treated as a word that participates in
- * CJK / alphanumeric spacing rules.
+ * CJK / Latin-word spacing rules.
  */
-function isAlphanumeric(type: string | undefined): boolean {
-  return type === TEXT_TYPE.latin || type === TEXT_TYPE.number
+function isLatinWord(type: string | undefined): boolean {
+  return type === TEXT_TYPE.latin
 }
 
 interface FixBoundarySpaceResult {
@@ -82,27 +82,24 @@ type TokenContext = ReturnType<typeof getNodeContextByParent<TextToken>>
  */
 function processSpaceToken(ctx: TokenContext, result: FixBoundarySpaceResult): void {
   const { prev, current, next } = ctx
+  /* v8 ignore if -- @preserve */
   if (!current)
     return
 
-  const isCjkToAlphanumeric = prev?.type === TEXT_TYPE.cjk && isAlphanumeric(next?.type)
-  const isAlphanumericToCjk = isAlphanumeric(prev?.type) && next?.type === TEXT_TYPE.cjk
-  const isAlphanumericToAlphanumeric = isAlphanumeric(prev?.type) && isAlphanumeric(next?.type)
+  const CJK2Latin = prev?.type === TEXT_TYPE.cjk && isLatinWord(next?.type)
+  const latin2CJK = isLatinWord(prev?.type) && next?.type === TEXT_TYPE.cjk
+  const latins = isLatinWord(prev?.type) && isLatinWord(next?.type)
   const hasUnexpectedSpaces = current.value.length !== 1
 
   if (hasUnexpectedSpaces) {
-    if (isCjkToAlphanumeric || isAlphanumericToAlphanumeric)
+    if (CJK2Latin || latins)
       result.unexpectedBefore = true
 
-    if (isAlphanumericToCjk || isAlphanumericToAlphanumeric)
+    if (latin2CJK || latins)
       result.unexpectedAfter = true
   }
 
-  if (
-    isCjkToAlphanumeric
-    || isAlphanumericToCjk
-    || (isAlphanumericToAlphanumeric && hasUnexpectedSpaces)
-  ) {
+  if (CJK2Latin || latin2CJK || hasUnexpectedSpaces) {
     result.fixed += ' '
   }
   else {
@@ -111,12 +108,13 @@ function processSpaceToken(ctx: TokenContext, result: FixBoundarySpaceResult): v
 }
 
 /**
- * Inserts missing boundary spaces around an alphanumeric token when it is
+ * Inserts missing boundary spaces around a Latin word when it is
  * adjacent to CJK text, while keeping track of the missing side(s) for
  * reporting.
  */
-function processAlphanumericToken(ctx: TokenContext, result: FixBoundarySpaceResult): void {
+function processLatinWordToken(ctx: TokenContext, result: FixBoundarySpaceResult): void {
   const { prev, current, next } = ctx
+  /* v8 ignore if -- @preserve */
   if (!current)
     return
 
@@ -134,7 +132,7 @@ function processAlphanumericToken(ctx: TokenContext, result: FixBoundarySpaceRes
 }
 
 /**
- * Rebuilds a text node with normalized spacing between CJK and alphanumeric
+ * Rebuilds a text node with normalized spacing between CJK and Latin-word
  * tokens, and returns both the fixed text and the boundary issues detected
  * during the pass.
  */
@@ -156,8 +154,8 @@ function fixBoundarySpace(node: Text): FixBoundarySpaceResult {
 
     if (ctx.current.type === TEXT_TYPE.space)
       processSpaceToken(ctx, result)
-    else if (isAlphanumeric(ctx.current.type))
-      processAlphanumericToken(ctx, result)
+    else if (isLatinWord(ctx.current.type))
+      processLatinWordToken(ctx, result)
     else
       result.fixed += ctx.current.value
   }

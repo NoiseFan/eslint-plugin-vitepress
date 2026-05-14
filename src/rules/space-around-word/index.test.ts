@@ -17,10 +17,6 @@ const valid: ValidTestCase[] = [
     code: '我们感谢 Jest 团队和社区创建了一个令人愉悦的测试 API',
   },
   {
-    description: 'mixed chinese, english, and numbers',
-    code: '自 Vitest 4.1 起',
-  },
-  {
     description: 'consecutive english text',
     code: 'WebStorm、PhpStorm、IntelliJ IDEA Ultimate 和其他 JetBrains IDE 内置了对 Vitest 的支持。',
   },
@@ -67,24 +63,23 @@ const invalid: InvalidTestCase[] = [
     output: '在 watch 模式下',
     errors: [{ messageId: MESSAGE_IDS.unexpectedSpaceAround }],
   },
-  // chinese & english & number
   {
     description: 'reports a missing space before an English word in mixed CJK text',
-    code: '从Vitest 4.1 起',
-    output: '从 Vitest 4.1 起',
+    code: '从Vitest 起',
+    output: '从 Vitest 起',
     errors: [{ messageId: MESSAGE_IDS.missingSpaceBefore }],
   },
   {
-    description: 'reports missing spaces around an adjacent alphanumeric segment',
-    code: '从Vitest4.1起',
-    output: '从 Vitest4.1 起',
+    description: 'reports missing spaces around an embedded English word',
+    code: '从Vitest起',
+    output: '从 Vitest 起',
     errors: [{ messageId: MESSAGE_IDS.missingSpacesAround }],
   },
   {
-    description: 'normalizes repeated spaces around consecutive alphanumeric segments',
-    code: '自 Vitest   4.1  起',
-    output: '自 Vitest 4.1 起',
-    errors: [{ messageId: MESSAGE_IDS.unexpectedSpaceAround }],
+    description: 'normalizes repeated spaces after an English word',
+    code: '自 Vitest  起',
+    output: '自 Vitest 起',
+    errors: [{ messageId: MESSAGE_IDS.unexpectedSpaceAfter }],
   },
 ]
 
