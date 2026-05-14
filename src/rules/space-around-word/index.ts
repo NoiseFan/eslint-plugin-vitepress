@@ -1,9 +1,8 @@
 import type { Text } from 'mdast'
 import type { ValueOf } from '@/types'
-import { TEXT_TYPE } from '@/types/text-tokenizer'
 import { createRule } from '@/utils'
 import { getNodeContextByParent } from '@/utils/ast'
-import { buildTextNodeAst, isLatinWord } from '@/utils/text-tokenizer'
+import { buildTextNodeAst, isLatinWord, TEXT_TYPE } from '@/utils/text-tokenizer'
 
 export const RULE_NAME = 'space-around-word'
 export const MESSAGE_IDS = {

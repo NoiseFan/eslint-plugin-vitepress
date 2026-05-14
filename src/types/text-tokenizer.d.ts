@@ -1,22 +1,5 @@
 import type { Text } from 'mdast'
-import type { ValueOf } from '@/types/index'
-
-export const TEXT_TYPE = {
-  'cjk': 'cjk',
-  'latin': 'latin',
-  'number': 'number',
-  'space': 'space',
-  'newline': 'newline',
-  'fullwidth-punctuation': 'fullwidth-punctuation',
-  'halfwidth-punctuation': 'halfwidth-punctuation',
-  'dash': 'dash',
-  'symbol': 'symbol',
-  'emoji': 'emoji',
-  'invisible': 'invisible',
-  'other': 'other',
-} as const
-
-export type TextType = ValueOf<typeof TEXT_TYPE>
+import type { TextType } from '@/utils/text-tokenizer'
 
 /**
  * Source location point compatible with mdast position points
