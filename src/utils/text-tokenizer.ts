@@ -1,7 +1,24 @@
 import type { Text } from 'mdast'
-import type { TextAst, TextPoint, TextPosition, TextToken, TextType } from '@/types/text-tokenizer'
-import { TEXT_TYPE } from '@/types/text-tokenizer'
+import type { ValueOf } from '@/types'
+import type { TextAst, TextPoint, TextPosition, TextToken } from '@/types/text-tokenizer'
 import { isDashPunctuation, isFullwidthPunctuation, isHalfwidthPunctuation } from './punctuation'
+
+export const TEXT_TYPE = {
+  'cjk': 'cjk',
+  'latin': 'latin',
+  'number': 'number',
+  'space': 'space',
+  'newline': 'newline',
+  'fullwidth-punctuation': 'fullwidth-punctuation',
+  'halfwidth-punctuation': 'halfwidth-punctuation',
+  'dash': 'dash',
+  'symbol': 'symbol',
+  'emoji': 'emoji',
+  'invisible': 'invisible',
+  'other': 'other',
+} as const
+
+export type TextType = ValueOf<typeof TEXT_TYPE>
 
 const CJK_RE = /^\p{Script=Han}$|^\p{Script=Hiragana}$|^\p{Script=Katakana}$|^\p{Script=Hangul}$/u
 const LATIN_RE = /^\p{Script=Latin}$/u

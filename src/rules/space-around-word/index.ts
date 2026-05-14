@@ -1,8 +1,8 @@
 import type { Text } from 'mdast'
-import { TEXT_TYPE } from '@/types/text-tokenizer'
+import type { ValueOf } from '@/types'
 import { createRule } from '@/utils'
 import { getNodeContextByParent } from '@/utils/ast'
-import { buildTextNodeAst, isLatinWord } from '@/utils/text-tokenizer'
+import { buildTextNodeAst, isLatinWord, TEXT_TYPE } from '@/utils/text-tokenizer'
 
 export const RULE_NAME = 'space-around-word'
 export const MESSAGE_IDS = {
@@ -14,7 +14,8 @@ export const MESSAGE_IDS = {
   unexpectedSpaceAround: 'unexpectedSpaceAround',
 } as const
 
-type MessageIds = typeof MESSAGE_IDS[keyof typeof MESSAGE_IDS]
+type MessageIds = ValueOf<typeof MESSAGE_IDS>
+
 type Options = []
 
 export default createRule<Options, MessageIds>({
