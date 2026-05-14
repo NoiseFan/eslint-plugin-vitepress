@@ -2,7 +2,7 @@ import type { Text } from 'mdast'
 import { TEXT_TYPE } from '@/types/text-tokenizer'
 import { createRule } from '@/utils'
 import { getNodeContextByParent } from '@/utils/ast'
-import { buildTextNodeAst } from '@/utils/text-tokenizer'
+import { buildTextNodeAst, isLatinWord } from '@/utils/text-tokenizer'
 
 export const RULE_NAME = 'space-around-word'
 export const MESSAGE_IDS = {
@@ -55,14 +55,6 @@ export default createRule<Options, MessageIds>({
     }
   },
 })
-
-/**
- * Checks whether a token type should be treated as a word that participates in
- * CJK / Latin-word spacing rules.
- */
-function isLatinWord(type: string | undefined): boolean {
-  return type === TEXT_TYPE.latin
-}
 
 interface FixBoundarySpaceResult {
   fixed: string
@@ -132,6 +124,34 @@ function processLatinWordToken(ctx: TokenContext, result: FixBoundarySpaceResult
 }
 
 /**
+ * Selects the most specific lint message for the combination of missing or
+ * unexpected boundary spaces found in the text node.
+ */
+function getMessageId(boundary: {
+  missingBefore: boolean
+  missingAfter: boolean
+  unexpectedBefore: boolean
+  unexpectedAfter: boolean
+}): MessageIds {
+  if (boundary.missingBefore && boundary.missingAfter)
+    return MESSAGE_IDS.missingSpacesAround
+
+  if (boundary.unexpectedBefore && boundary.unexpectedAfter)
+    return MESSAGE_IDS.unexpectedSpaceAround
+
+  if (boundary.missingBefore)
+    return MESSAGE_IDS.missingSpaceBefore
+
+  if (boundary.missingAfter)
+    return MESSAGE_IDS.missingSpaceAfter
+
+  if (boundary.unexpectedBefore)
+    return MESSAGE_IDS.unexpectedSpaceBefore
+
+  return MESSAGE_IDS.unexpectedSpaceAfter
+}
+
+/**
  * Rebuilds a text node with normalized spacing between CJK and Latin-word
  * tokens, and returns both the fixed text and the boundary issues detected
  * during the pass.
@@ -161,32 +181,4 @@ function fixBoundarySpace(node: Text): FixBoundarySpaceResult {
   }
 
   return result
-}
-
-/**
- * Selects the most specific lint message for the combination of missing or
- * unexpected boundary spaces found in the text node.
- */
-function getMessageId(boundary: {
-  missingBefore: boolean
-  missingAfter: boolean
-  unexpectedBefore: boolean
-  unexpectedAfter: boolean
-}): MessageIds {
-  if (boundary.missingBefore && boundary.missingAfter)
-    return MESSAGE_IDS.missingSpacesAround
-
-  if (boundary.unexpectedBefore && boundary.unexpectedAfter)
-    return MESSAGE_IDS.unexpectedSpaceAround
-
-  if (boundary.missingBefore)
-    return MESSAGE_IDS.missingSpaceBefore
-
-  if (boundary.missingAfter)
-    return MESSAGE_IDS.missingSpaceAfter
-
-  if (boundary.unexpectedBefore)
-    return MESSAGE_IDS.unexpectedSpaceBefore
-
-  return MESSAGE_IDS.unexpectedSpaceAfter
 }

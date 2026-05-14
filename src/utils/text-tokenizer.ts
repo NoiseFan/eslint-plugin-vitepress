@@ -39,6 +39,10 @@ function isInvisible(char: string): boolean {
   )
 }
 
+export function isLatinWord(type: string | undefined): boolean {
+  return type === TEXT_TYPE.latin
+}
+
 const TEXT_TYPE_MATCHERS = [
   { type: TEXT_TYPE.newline, test: (char: string) => NEWLINE_RE.test(char) },
   { type: TEXT_TYPE.space, test: (char: string) => SPACE_RE.test(char) },

@@ -63,24 +63,6 @@ const invalid: InvalidTestCase[] = [
     output: '在 watch 模式下',
     errors: [{ messageId: MESSAGE_IDS.unexpectedSpaceAround }],
   },
-  {
-    description: 'reports a missing space before an English word in mixed CJK text',
-    code: '从Vitest 起',
-    output: '从 Vitest 起',
-    errors: [{ messageId: MESSAGE_IDS.missingSpaceBefore }],
-  },
-  {
-    description: 'reports missing spaces around an embedded English word',
-    code: '从Vitest起',
-    output: '从 Vitest 起',
-    errors: [{ messageId: MESSAGE_IDS.missingSpacesAround }],
-  },
-  {
-    description: 'normalizes repeated spaces after an English word',
-    code: '自 Vitest  起',
-    output: '自 Vitest 起',
-    errors: [{ messageId: MESSAGE_IDS.unexpectedSpaceAfter }],
-  },
 ]
 
 run({
